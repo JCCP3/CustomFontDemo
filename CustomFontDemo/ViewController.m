@@ -33,14 +33,13 @@
     [self.view addSubview:currentTableView];
     
     [self createFont];
-    [self printAllFonts];
+    [self registerAllFont];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = YES;
-    [self registerAllFont];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -50,8 +49,13 @@
 
 - (void)createFont
 {
+    FontName *fontName0 = [[FontName alloc] init];
+    fontName0.fontName = @"STHeiti";
+    fontName0.fontChineseName = @"黑体";
+    fontName0.isFontUse = YES;
+    
     FontName *fontName = [[FontName alloc] init];
-    fontName.fontName = @"DFWaWaSC-W51";
+    fontName.fontName = @"DFWaWaSC-W5";
     fontName.fontChineseName = @"娃娃体";
     fontName.isFontUse = NO;
     
@@ -64,21 +68,6 @@
     fontName2.fontName = @"STKaiti-SC-Regular";
     fontName2.fontChineseName = @"楷体";
     fontName2.isFontUse = NO;
-    
-    FontName *fontName3 = [[FontName alloc] init];
-    fontName3.fontName = @"STSongti-SC-Regular";
-    fontName3.fontChineseName = @"宋体";
-    fontName3.isFontUse = NO;
-    
-    FontName *fontName4 = [[FontName alloc] init];
-    fontName4.fontName = @"STXihei1111";
-    fontName4.fontChineseName = @"黑体";
-    fontName4.isFontUse = NO;
-    
-    FontName *fontName5 = [[FontName alloc] init];
-    fontName5.fontName = @"STKaiti11111";
-    fontName5.fontChineseName = @"华文楷体11111";
-    fontName5.isFontUse = NO;
     
     FontName *fontName6 = [[FontName alloc] init];
     fontName6.fontName = @"STSong";
@@ -101,7 +90,7 @@
     fontName9.isFontUse = NO;
    
     
-    aryFontNameData = @[fontName,fontName1,fontName2,fontName3,fontName4,fontName5,fontName6,fontName7,fontName8,fontName9];
+    aryFontNameData = @[fontName0,fontName,fontName1,fontName2,fontName6,fontName7,fontName8,fontName9];
 }
 
 #pragma mark - 判断字体是否安装过
@@ -122,7 +111,7 @@
     if ([self isFontDownLoaded:name.fontName]) {
         return;
     }
-
+    
     NSMutableDictionary *attrs = [NSMutableDictionary dictionaryWithObjectsAndKeys:name.fontName, kCTFontNameAttribute, nil];
 
     CTFontDescriptorRef desc = CTFontDescriptorCreateWithAttributes((__bridge CFDictionaryRef)attrs);
@@ -179,9 +168,7 @@
                 
                 CTFontRef fontRef = CTFontCreateWithName((__bridge CFStringRef)name.fontName, 0., NULL);
                 CFStringRef fontURL = CTFontCopyAttribute(fontRef, kCTFontURLAttribute);
-                
-                [self registerFont:(__bridge NSString *)(fontURL) withFontName:name.fontName];
-               
+                [self savePathForFont:(__bridge NSString *)(fontURL) withName:name.fontName];
                 CFRelease(fontURL);
                 CFRelease(fontRef);
                 
@@ -234,6 +221,21 @@
     
 }
 
+#pragma mark - 保存字体到Document文件夹下
+- (void)savePathForFont:(NSString *)fontPath withName:(NSString *)fontName
+{
+    NSData *dynamicContent = [NSData dataWithContentsOfFile:fontPath];
+    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES);
+    NSString *documentsDirectory = [pathArray objectAtIndex:0];
+    NSString *localFontPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.ttc",fontName]];
+    
+    NSFileManager *fm = [[NSFileManager alloc] init];
+    if (![fm fileExistsAtPath:localFontPath]) {
+        if ([dynamicContent writeToFile:localFontPath atomically:YES]) {
+            NSLog(@"写入成功");
+        }
+    }
+}
 
 #pragma mark - 应用启动注册所有字体
 - (void)registerAllFont
@@ -242,64 +244,26 @@
     NSString *documentsDirectory = [pathArray objectAtIndex:0];
     
     for (FontName *name in aryFontNameData) {
-        NSString *currentDocumentsDirectory = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"assets%@",name.fontName]];
+        NSString *currentDocumentsDirectory = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.ttc",name.fontName]];
         NSFileManager* fm=[NSFileManager defaultManager];
         if ([fm fileExistsAtPath:currentDocumentsDirectory]) {
             NSData *data = [fm contentsAtPath:currentDocumentsDirectory];
             if (data) {
-                [self registerFont:currentDocumentsDirectory withFontName:name.fontName];
+                [self registerFont:currentDocumentsDirectory];
             }
         }
     }
+ 
 }
 
-#pragma mark - 注册指定font
-- (void)registerFont:(NSString *)fontPath withFontName:(NSString *)name
+- (void)registerFont:(NSString *)fontPath
 {
-    NSData *dynamicFontData = [NSData dataWithContentsOfFile:fontPath];
-    if (!dynamicFontData)
-    {
-        return;
-    }
-    CFErrorRef error;
-    CGDataProviderRef providerRef = CGDataProviderCreateWithCFData((__bridge CFDataRef)dynamicFontData);
-    CGFontRef font = CGFontCreateWithDataProvider(providerRef);
-    if (! CTFontManagerRegisterGraphicsFont(font, &error))
-    {
-        //注册失败
-        CFStringRef errorDescription = CFErrorCopyDescription(error);
-        NSLog(@"Failed to load font: %@", errorDescription);
-        CFRelease(errorDescription);
-    }
-    CFRelease(font);
-    CFRelease(providerRef);
-    
-    NSArray *pathArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES);
-    NSString *documentsDirectory = [pathArray objectAtIndex:0];
-    NSString *localFontPath = [documentsDirectory stringByAppendingPathComponent:[NSString stringWithFormat:@"assets%@",name]];
-    
-    NSFileManager *fm = [[NSFileManager alloc] init];
-    if (![fm fileExistsAtPath:localFontPath]) {
-        if ([dynamicFontData writeToFile:localFontPath atomically:YES]) {
-        }
-    }
-    
-    
-    [self printAllFonts];
-    
-}
 
-- (void)printAllFonts
-{
-    NSArray *fontFamilies = [UIFont familyNames];
-    
-    for (NSString *fontFamily in fontFamilies)
-    {
-        NSArray *fontNames = [UIFont fontNamesForFamilyName:fontFamily];
-        NSLog (@"%@: %@", fontFamily, fontNames);
-    }
-}
+    NSURL *url = [NSURL fileURLWithPath:fontPath];
+    CFURLRef fontUrl = (__bridge CFURLRef)url;
+    CTFontManagerRegisterFontsForURL(fontUrl, kCTFontManagerScopeNone, NULL);
 
+}
 
 #pragma mark - UITableViewDelegate & UITableVIewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -339,18 +303,6 @@
     }
     
     FontName *fontName = [aryFontNameData objectAtIndex:indexPath.row];
-    if (indexPath.row == 0) {
-        //娃娃体
-        fontName.fontName = @"DFWaWaSC-W5";
-    } else if (indexPath.row == 1) {
-        fontName.fontName = @"STYuanti-SC-Bold";
-    } else if (indexPath.row == 2) {
-        fontName.fontName = @"STKaiti-SC-Black";
-    } else if (indexPath.row == 3){
-        fontName.fontName = @"STSongti-SC-Black";
-    } else if (indexPath.row == 4){
-        fontName.fontName = @"STHeitiSC-Light";
-    }
     
     for (UIView *subView in cell.subviews) {
         if ([subView isKindOfClass:[UIButton class]]) {
@@ -410,7 +362,5 @@
         [self asynchronouslySetFontName:fontName];
     }
 }
-
-
 
 @end

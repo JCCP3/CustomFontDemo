@@ -14,6 +14,7 @@
 		FE56076A1B856E74009F5235 /* CustomFontDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FE5607691B856E74009F5235 /* CustomFontDemoTests.m */; };
 		FE5607751B856EA7009F5235 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FE5607741B856EA7009F5235 /* ViewController.m */; };
 		FE56077B1B85D1F8009F5235 /* FontName.m in Sources */ = {isa = PBXBuildFile; fileRef = FE56077A1B85D1F8009F5235 /* FontName.m */; };
+		FE65A2281B8AAFE800D98A03 /* ShowFontViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FE65A2271B8AAFE800D98A03 /* ShowFontViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +42,8 @@
 		FE5607741B856EA7009F5235 /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		FE5607791B85D1F8009F5235 /* FontName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontName.h; sourceTree = "<group>"; };
 		FE56077A1B85D1F8009F5235 /* FontName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FontName.m; sourceTree = "<group>"; };
+		FE65A2261B8AAFE800D98A03 /* ShowFontViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowFontViewController.h; sourceTree = "<group>"; };
+		FE65A2271B8AAFE800D98A03 /* ShowFontViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowFontViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +94,8 @@
 				FE5607741B856EA7009F5235 /* ViewController.m */,
 				FE5607791B85D1F8009F5235 /* FontName.h */,
 				FE56077A1B85D1F8009F5235 /* FontName.m */,
+				FE65A2261B8AAFE800D98A03 /* ShowFontViewController.h */,
+				FE65A2271B8AAFE800D98A03 /* ShowFontViewController.m */,
 			);
 			path = CustomFontDemo;
 			sourceTree = "<group>";
@@ -224,6 +229,7 @@
 				FE5607751B856EA7009F5235 /* ViewController.m in Sources */,
 				FE56077B1B85D1F8009F5235 /* FontName.m in Sources */,
 				FE5607531B856E74009F5235 /* AppDelegate.m in Sources */,
+				FE65A2281B8AAFE800D98A03 /* ShowFontViewController.m in Sources */,
 				FE5607501B856E74009F5235 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
